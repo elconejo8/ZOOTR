@@ -11,8 +11,8 @@ load_data_objects = False
 save_data_objects = True
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-item_path = "C:\\Users\\Guilherme\\Documents\\ZOOTR\\Test\\Items\\"
-non_item_path = "C:\\Users\\Guilherme\\Documents\\ZOOTR\\Random_Frames\\"
+item_path = r"C:\Users\guilh\Git\ZOOTR\Test\Items\\"
+non_item_path = r"C:\Users\guilh\Git\ZOOTR\Random_frames\\"
 
 
 if  load_data_objects:

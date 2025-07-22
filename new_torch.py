@@ -37,7 +37,7 @@ def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
                 # forward
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
-                    outputs = model(inputs)
+                    outputs = model.to(device)(inputs)
                     #preds = torch.softmax(outputs, 1)[:,1]
                     loss = criterion(outputs, labels)
                     #Average loss for batch
