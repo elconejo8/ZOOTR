@@ -1,0 +1,6 @@
+.venv_zootr/
+*.pth
+*.ini
+*.jpg
+*.png
+*.pyc
