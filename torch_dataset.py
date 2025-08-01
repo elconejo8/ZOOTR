@@ -1,7 +1,6 @@
-import os
 import numpy as np
-from skimage import io, transform
-from torch.utils.data import Dataset, DataLoader
+from skimage import io
+from torch.utils.data import Dataset
 from torchvision import transforms
 
 class ZootrDataset(Dataset):
