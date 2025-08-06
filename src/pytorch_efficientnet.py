@@ -3,8 +3,6 @@ import torch.nn as nn
 from efficientnet_pytorch import EfficientNet
 import torch.nn.functional as F
 from torchvision import transforms
-#from albumentations import ToFloat, Resize, Compose, Normalize
-#from albumentations.pytorch import ToTensor
 from torch_dataset import ZootrDataset 
 import numpy as np
 from torch import softmax
