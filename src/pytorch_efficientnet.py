@@ -3,7 +3,6 @@ import torch.nn as nn
 from efficientnet_pytorch import EfficientNet
 import torch.nn.functional as F
 from torchvision import transforms
-from torch_dataset import ZootrDataset 
 import numpy as np
 from torch import softmax
 from sklearn.metrics import roc_auc_score

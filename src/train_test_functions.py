@@ -1,7 +1,7 @@
 import time
 import torch
 import os
-
+from tqdm import tqdm
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -14,9 +14,10 @@ def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
     best_loss = 1000000000000000000000
 
     for epoch in range(1, num_epochs+1):
+        loss_dict = {}
+        print('Epoch', epoch)
         # Each epoch has a training and validation phase
         for phase in ['train', 'val']:
-            print('Starting ', phase)
             if phase == 'train':
                 model.train()  # Set model to training mode
             else:
@@ -25,11 +26,11 @@ def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
             running_loss = 0.0
             batch_nr = 0 
             # Iterate over data.
-            for inputs, labels in dataloaders[phase]:
+            for inputs, labels in tqdm(dataloaders[phase]):
                 inputs = inputs.to(device)
                 labels = labels.to(device)
                 batch_nr += 1
-                print('Epoch {}/{}. Batch {}/{}'.format(epoch, num_epochs, batch_nr, dataset_sizes[phase]//len(labels)))
+                #print('Epoch {}/{}. Batch {}/{}'.format(epoch, num_epochs, batch_nr, dataset_sizes[phase]//len(labels)))
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -51,18 +52,16 @@ def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
                 running_loss += loss.item() * inputs.size(0) #Needs to de-average batch loss
 #            if phase == 'train':
 #                scheduler.step()
-
             epoch_loss = running_loss / dataset_sizes[phase]
-            print('Epoch {} loss : {}'.format(epoch, epoch_loss))
+            #print('Epoch {} loss : {}'.format(epoch, epoch_loss))
+            loss_dict[phase] = epoch_loss
             if best_loss > epoch_loss:
                 best_loss = epoch_loss
             torch.save(model.cpu().state_dict(), os.path.join('Models', 'model_' + str(epoch) + '.pth'))
             with open("Models/scores.txt", "a") as myfile:
                 myfile.write('Epoch {}. {} loss : {} \n'.format(epoch, phase, epoch_loss))
-
-
-
-        print()
+        
+        print("Train loss:", loss_dict['train'], "Val loss:", loss_dict['val'])
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
