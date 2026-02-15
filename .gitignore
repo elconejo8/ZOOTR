@@ -1,7 +1,13 @@
 .venv_zootr/
+mlartifacts/
+mlruns/
+Tracking/
+
 *.pth
 *.ini
 *.jpg
 *.png
 *.pyc
 *.cfg
+*.json
+*.pt
