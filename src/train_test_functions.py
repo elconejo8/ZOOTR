@@ -2,6 +2,7 @@ import time
 import torch
 import os
 from tqdm import tqdm
+import numpy as np
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -11,7 +12,8 @@ def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
 
     dataloaders = dics['dataloaders']
     dataset_sizes = dics['dataset_sizes']
-    best_loss = 1000000000000000000000
+    best_loss = np.inf
+    loss_dict_collection = {}
 
     for epoch in range(1, num_epochs+1):
         loss_dict = {}
@@ -30,7 +32,6 @@ def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
                 inputs = inputs.to(device)
                 labels = labels.to(device)
                 batch_nr += 1
-                #print('Epoch {}/{}. Batch {}/{}'.format(epoch, num_epochs, batch_nr, dataset_sizes[phase]//len(labels)))
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -39,7 +40,6 @@ def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
                     outputs = model.to(device)(inputs)
-                    #preds = torch.softmax(outputs, 1)[:,1]
                     loss = criterion(outputs, labels)
                     #Average loss for batch
 
@@ -50,10 +50,8 @@ def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
 
                 # statistics
                 running_loss += loss.item() * inputs.size(0) #Needs to de-average batch loss
-#            if phase == 'train':
-#                scheduler.step()
+
             epoch_loss = running_loss / dataset_sizes[phase]
-            #print('Epoch {} loss : {}'.format(epoch, epoch_loss))
             loss_dict[phase] = epoch_loss
             if best_loss > epoch_loss:
                 best_loss = epoch_loss
@@ -61,15 +59,14 @@ def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
             with open("Models/scores.txt", "a") as myfile:
                 myfile.write('Epoch {}. {} loss : {} \n'.format(epoch, phase, epoch_loss))
         
+        loss_dict_collection[epoch] = loss_dict
         print("Train loss:", loss_dict['train'], "Val loss:", loss_dict['val'])
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
     print('Best val loss: {:4f}'.format(best_loss))
 
-    # load best model weights
-    #model.load_state_dict(best_model_wts)
-    return model
+    return model, loss_dict_collection
 
 
 
