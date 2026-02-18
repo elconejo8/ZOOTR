@@ -1,0 +1,1 @@
+The aim of this project is to use image recognition to detect a specific action (obtaining an item) in videos of the videogame "The Legend of Zelda: Ocarina of Time". In particular, the gameplay is from randomizer runs of the game, that switch item locations.
