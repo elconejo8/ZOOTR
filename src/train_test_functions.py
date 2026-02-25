@@ -13,6 +13,7 @@ def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
     dataloaders = dics['dataloaders']
     dataset_sizes = dics['dataset_sizes']
     best_loss = np.inf
+    best_model = None
     loss_dict_collection = {}
 
     for epoch in range(1, num_epochs+1):
@@ -55,9 +56,7 @@ def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
             loss_dict[phase] = epoch_loss
             if best_loss > epoch_loss:
                 best_loss = epoch_loss
-            torch.save(model.cpu().state_dict(), os.path.join('Models', 'model_' + str(epoch) + '.pth'))
-            with open("Models/scores.txt", "a") as myfile:
-                myfile.write('Epoch {}. {} loss : {} \n'.format(epoch, phase, epoch_loss))
+                best_model = model
         
         loss_dict_collection[epoch] = loss_dict
         print("Train loss:", loss_dict['train'], "Val loss:", loss_dict['val'])
@@ -66,7 +65,7 @@ def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
     print('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
     print('Best val loss: {:4f}'.format(best_loss))
 
-    return model, loss_dict_collection
+    return best_model, loss_dict_collection
 
 
 
