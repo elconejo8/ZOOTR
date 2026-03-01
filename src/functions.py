@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat May  2 20:32:37 2020
-
-@author: Guilherme
-"""
-
 import cv2
 from PIL import Image
 import numpy as np
