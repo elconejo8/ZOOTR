@@ -7,7 +7,7 @@ import numpy as np
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def train_model(model, criterion, optimizer, scheduler, dics, num_epochs=25):
+def train_model(model, criterion, optimizer, dics, num_epochs=25):
     since = time.time()
 
     dataloaders = dics['dataloaders']

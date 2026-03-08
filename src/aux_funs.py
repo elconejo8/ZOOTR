@@ -4,16 +4,21 @@ import torch
 from torch import softmax
 from torch.autograd import Variable
 from PIL import Image
+from torchvision import transforms
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def get_image_pred(img, model, transform = None):
-#    x = Variable(torch.from_numpy(img))
-#    x.to('cpu', dtype=torch.float)
-    x = img
+
     if transform is not None:
-        x = transform(x)
-    out = model(x[None, :, :, :])
+        img = transform(img)
+
+    img = img.to(device)
+    model = model.to(device)
+
+    out = model(img[None, :, :, :])
     pred = softmax(out, 1).cpu().detach().numpy()[0]
-    return pred[1]
+    return pred[1].item()
 #Get prediction on a single image
     
 

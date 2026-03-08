@@ -6,10 +6,9 @@ import time
 def start_mlflow(experiment_name, open_ui=True):
 
     mlflow.set_tracking_uri("file:./Tracking")
-    #Fil based tracking
+    #File based tracking
     mlflow.set_experiment(experiment_name)
     
-    # Optionally start UI
     if open_ui:
         subprocess.Popen(
             ['mlflow', 'ui', '--backend-store-uri', 'file:Tracking'],
