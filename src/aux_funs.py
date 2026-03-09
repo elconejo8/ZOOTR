@@ -34,7 +34,7 @@ def save_video_frames(vid, save_to_path, n,  model=None, transform=None):
             if model is not None:
                 pred = get_image_pred(vframe, model, transform)
                 predictions.append(float(pred))
-                Image.fromarray(vframe).save(os.path.join(save_to_path, str(j) + '-' + str(float(pred)) + '.png'))
+                Image.fromarray(vframe).save(os.path.join(save_to_path, str(j) + '-' + str(round(float(pred), 2)) + '.png'))
             else:
                 Image.fromarray(vframe).save(os.path.join(save_to_path, str(j) + '.png'))
     return predictions
