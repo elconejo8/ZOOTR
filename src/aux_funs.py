@@ -2,10 +2,10 @@ import cv2
 import os
 import torch
 from torch import softmax
-from torch.autograd import Variable
 from PIL import Image
-from torchvision import transforms
 import time
+from decord import VideoReader, cpu
+
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -15,7 +15,6 @@ def get_image_pred(img, model, transform = None):
         img = transform(img)
 
     img = img.to(device)
-    model = model.to(device)
 
     out = model(img[None, :, :, :])
     pred = softmax(out, 1).cpu().detach().numpy()[0]
@@ -25,6 +24,8 @@ def get_image_pred(img, model, transform = None):
 
 
 def save_video_frames(vid, save_to_path, n,  model=None, transform=None):
+    model = model.to(device)
+    model.eval()
     start = time.time()
     video_capture = cv2.VideoCapture(vid)
     v_len = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -58,3 +59,20 @@ def save_video_frames(vid, save_to_path, n,  model=None, transform=None):
 #Gets a video and saves every n frame to specified folder. Frame name is it's sequential number. 
 #If given a model it calculates probability of frame being an item and appends it to the name.
 #Returns all the predictions (empty list if no model given)
+
+
+def batch_frame_predict(video_location, model, transform, device, batch_size=20):
+    vr = VideoReader(video_location, ctx=cpu(0)) 
+    total_frames = len(vr)
+    all_predictions = []
+
+    for i in range(0, total_frames, batch_size):
+        batch_idx = vr[i:i+batch_size]
+        x_tensor = torch.from_numpy(batch_idx.asnumpy()) 
+        batch_tensor = transform(x_tensor)
+        with torch.no_grad():
+            outputs = model(batch_tensor.to(device))
+            probs = softmax(outputs, 1).cpu().numpy()[:, 1]
+            all_predictions += list(probs)
+    
+    return all_predictions

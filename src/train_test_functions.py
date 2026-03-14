@@ -9,7 +9,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def train_model(model, criterion, optimizer, dics, num_epochs=25):
     since = time.time()
-
+    model = model.to(device)
     dataloaders = dics['dataloaders']
     dataset_sizes = dics['dataset_sizes']
     best_loss = np.inf
@@ -40,7 +40,7 @@ def train_model(model, criterion, optimizer, dics, num_epochs=25):
                 # forward
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
-                    outputs = model.to(device)(inputs)
+                    outputs = model(inputs)
                     loss = criterion(outputs, labels)
                     #Average loss for batch
 
