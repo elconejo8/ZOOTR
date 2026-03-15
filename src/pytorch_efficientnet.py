@@ -5,6 +5,7 @@ import torch.nn.functional as F
 from torchvision import transforms
 import numpy as np
 from torch import softmax
+from torchvision.transforms import v2
 from sklearn.metrics import roc_auc_score
 
 def augment(x):
@@ -33,7 +34,21 @@ def augmented_pred(x):
          ])
     x_trans = transform(x)
     return x_trans
+
+
+def augmented_pred_batch(x):
+    transform = v2.Compose([
+        v2.ToImage(),
+        v2.Resize((128, 128)),
+        v2.CenterCrop((100, 100)),
+        v2.Resize((80, 80)),
+        v2.ToDtype(torch.float32, scale=True),
+        v2.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        ])
     
+    x = x.permute(0, 3, 1, 2)
+    x_trans = transform(x)
+    return x_trans
 
 
 def to_tensor(x):
@@ -118,3 +133,4 @@ class EfficientNetwork(nn.Module):
         
         return out
     
+
